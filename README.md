@@ -5,8 +5,6 @@ Hello guys this is the app i created to extract data from visiting and business 
 bz_front_page
 
 This is the frontend view of Database side
-My streamlit app link
-My app link
 
 You can find the data i used in the creative modern business card folder
 Lets see the codes step by step
