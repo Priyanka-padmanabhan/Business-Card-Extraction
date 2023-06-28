@@ -1,27 +1,49 @@
-Business Cards Data Extraction
-Hello guys this is the app i created to extract data from visiting and business cards.This app can also be used to extract data from any image files. Enjoy the app and HAPPY CODING😉
+import streamlit as st
+from function import upload_database, extracted_data, show_database
 
-bz_front_page
+# ------------------------------------------setting page configuration in streamlit---------------------------------------------------------
+st.set_page_config(page_title='Bizcardx Extraction', layout="wide")
 
-This is the frontend view of Database side
-My streamlit app link
-My app link
+st.balloons()
+st.title(':violet[Bizcardx Data Extraction🖼️]')
 
-You can find the data i used in the creative modern business card folder
-Lets see the codes step by step
+data_extraction, database_side = st.tabs(
+    ['Data uploading and Viewing', 'Database side'])
+file_name = 'thiru'
+with data_extraction:
+    st.markdown(
+        "![Alt Text](https://cdn.dribbble.com/users/393235/screenshots/1643374/media/b32f920793005f554f22129c96627c56.gif)")
+    st.subheader(':violet[Choose image file to extract data]')
+    # ---------------------------------------------- Uploading file to streamlit app ------------------------------------------------------
+    uploaded = st.file_uploader('Choose a image file')
+    # --------------------------------------- Convert binary values of image to IMAGE ---------------------------------------------------
+    if uploaded is not None:
+        with open(f'{file_name}.png', 'wb') as f:
+            f.write(uploaded.getvalue())
+        # ----------------------------------------Extracting data from image (Image view)-------------------------------------------------
+        st.subheader(':violet[Image view of Data]')
+        if st.button('Extract Data from Image'):
+            extracted = extracted_data(f'{file_name}.png')
+            st.image(extracted)
 
-To extract datas from image i used EASYOCR in this project.To use easyocr you need to install pytorch also.(please see the requirements.txt file)
-Please install requirements.txt.
-
-step:1
-I created a function.py file to create all required function in that file. And imported all required packages import
-
-step:2
-I created a function to extract datas from image and to separate all the extracted data using regular expression.(for detailed code see funtion.py file) upload database
-
-step:3
-To view extracted data in image format i used opencv package to view the Image view of data in app extract image data
-
-After creating all the functions i created the streamlit app using the function and its very simple app only.(you can see the app code in app.py file)
-
-I think this project will be useful to you foster your knowledge in Image data extraction using easyocr AND Happy coding😁
+        # ----------------------------------------upload data to database----------------------------------------------------------------
+        st.subheader(':violet[Upload extracted to Database]')
+        if st.button('Upload data'):
+            upload_database(f'{file_name}.png')
+            st.success('Data uploaded to Database successfully!', icon="✅")
+# --------------------------------------------getting data from database and storing in df variable---------------------------------------
+df = show_database()
+with database_side:
+    st.markdown(
+        "![Alt Text](https://cdn.dribbble.com/users/2037413/screenshots/4144417/ar_businesscard.gif)")
+    # ----------------------------------------Showing all datas in database---------------------------------------------------------------
+    st.title(':violet[All Data in Database]')
+    if st.button('Show All'):
+        st.dataframe(df)
+    # -----------------------------------------Search data in the database----------------------------------------------------------------
+    st.subheader(':violet[Search Data by Column]')
+    column = str(st.radio('Select column to search', ('Name', 'Designation',
+                 'Company_name', 'Address', 'Contact_number', 'Mail_id', 'Website_link'), horizontal=True))
+    value = str(st.selectbox('Please select value to search', df[column]))
+    if st.button('Search Data'):
+        st.dataframe(df[df[column] == value])
